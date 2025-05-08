@@ -23,6 +23,10 @@ export default class View {
   }
 
   render() {
+    // Limpia todas las filas excepto el encabezado
+    const rows = Array.from(this.table.getElementsByTagName('tr'));
+    rows.slice(1).forEach(row => row.remove());
+    
     const todos = this.model.getTodos();
     todos.forEach((todo) => this.createRow(todo));
   }
@@ -35,27 +39,34 @@ export default class View {
       let shouldHide = false;
   
       // Filtrado por palabras clave
-      if (words) {
-        shouldHide = !title.innerText.includes(words) && !description.innerText.includes(words);
+      // Filtrado por palabras clave
+      if (words && title && description) {
+        const matchesWords = title.innerText.includes(words) || description.innerText.includes(words);
+        shouldHide = !matchesWords; // Si no hay coincidencias, ocultar
       }
-  
+
       // Filtrado por estado de completado
-      const shouldBeCompleted = type === 'completed';
-      const isCompleted = completed.children[0].checked;
-  
-      if (type !== 'all' && shouldBeCompleted !== isCompleted) {
-        shouldHide = true;
+      if (type !== 'all') {
+        const shouldBeCompleted = type === 'completed';
+        const isCompleted = completed.children[0].checked;
+        if (shouldBeCompleted !== isCompleted) {
+          shouldHide = true;
+        }
       }
+    
   
       // Filtrado por fecha (nueva lógica)
       if (dueDate) {
-        const rowDate = new Date(dateCell.innerText);
+        const rowDate = dateCell ? new Date(dateCell.innerText) : new Date('Invalid');
         const filterDate = new Date(dueDate);
+        
+        // Verifica si las fechas son válidas antes de compararlas
         if (isNaN(rowDate.getTime()) || rowDate.getTime() !== filterDate.getTime()) {
           shouldHide = true;
         }
       }
-  
+
+
       if (shouldHide) {
         row.classList.add('d-none');
       } else {
