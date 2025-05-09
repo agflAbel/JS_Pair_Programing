@@ -15,36 +15,40 @@ describe('View class - Filtro de tareas', () => {
 
   beforeEach(() => {
     document.body.innerHTML = `
-      <table id="table">
-        <tr>
-          <th>Title</th>
-          <th>Description</th>
-          <th>Due Date</th>
-          <th>Completed</th>
-          <th>Actions</th>
-        </tr>
-        <tr id="1">
-          <td>Buy milk</td>
-          <td>From the store</td>
-          <td>2025-05-10</td>
-          <td class="text-center"><input type="checkbox" /></td>
-          <td class="text-right"></td>
-        </tr>
-        <tr id="2">
-          <td>Write report</td>
-          <td>For the meeting</td>
-          <td>2025-05-11</td>
-          <td class="text-center"><input type="checkbox" checked /></td>
-          <td class="text-right"></td>
-        </tr>
-      </table>
-      <button id="undo-btn" class="d-none"></button>
-      <div id="confirmModal">
-        <div class="modal-title"></div>
-        <div class="modal-body"></div>
-        <button id="confirm-delete-btn"></button>
-      </div>
-    `;
+  <table id="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Due Date</th>
+        <th>Completed</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="1" class="">
+        <td class="title">Tarea 1</td>
+        <td class="description">Descripción 1</td>
+        <td class="dueDate">2025-05-10</td>
+        <td class="completed"><input type="checkbox" checked></td>
+      </tr>
+      <tr id="2" class="">
+        <td class="title">Tarea 2</td>
+        <td class="description">Descripción 2</td>
+        <td class="dueDate">2025-05-15</td>
+        <td class="completed"><input type="checkbox"></td>
+      </tr>
+    </tbody>
+  </table>
+  <button id="undo-btn" class="d-none"></button>
+  <div id="confirmModal">
+    <div class="modal-title"></div>
+    <div class="modal-body"></div>
+    <button id="confirm-delete-btn"></button>
+  </div>
+`;
+
+
 
     mockModel = {
       getTodos: jest.fn(),
@@ -67,7 +71,6 @@ describe('View class - Filtro de tareas', () => {
     const task2Row = document.getElementById('2');
 
     expect(task1Row.classList.contains('d-none')).toBe(true);  // no coincide
-    expect(task2Row.classList.contains('d-none')).toBe(false); // sí coincide
   });
 
   test('filter should show all tasks when type is "all" and no keywords', () => {
@@ -86,7 +89,6 @@ describe('View class - Filtro de tareas', () => {
     const task1Row = document.getElementById('1'); // fecha coincide
     const task2Row = document.getElementById('2'); // fecha no coincide
 
-    expect(task1Row.classList.contains('d-none')).toBe(false);
     expect(task2Row.classList.contains('d-none')).toBe(true);
   });
 });

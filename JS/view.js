@@ -32,48 +32,51 @@ export default class View {
   }
 
   filter(filters) {
-    const { type, words, dueDate } = filters; // Asegúrate de que dueDate sea parte de los filtros, si es necesario.
-    const [, ...rows] = this.table.getElementsByTagName('tr');
-    for (const row of rows) {
-      const [title, description, dateCell, completed] = row.children; // Incluye la celda de fecha.
-      let shouldHide = false;
-  
-      // Filtrado por palabras clave
-      // Filtrado por palabras clave
-      if (words && title && description) {
-        const matchesWords = title.innerText.includes(words) || description.innerText.includes(words);
-        shouldHide = !matchesWords; // Si no hay coincidencias, ocultar
-      }
+  const { type, words, dueDate } = filters;
+  const [, ...rows] = this.table.getElementsByTagName('tr');
 
-      // Filtrado por estado de completado
-      if (type !== 'all') {
-        const shouldBeCompleted = type === 'completed';
-        const isCompleted = completed.children[0].checked;
-        if (shouldBeCompleted !== isCompleted) {
-          shouldHide = true;
-        }
-      }
-    
-  
-      // Filtrado por fecha (nueva lógica)
-      if (dueDate) {
-        const rowDate = dateCell ? new Date(dateCell.innerText) : new Date('Invalid');
-        const filterDate = new Date(dueDate);
-        
-        // Verifica si las fechas son válidas antes de compararlas
-        if (isNaN(rowDate.getTime()) || rowDate.getTime() !== filterDate.getTime()) {
-          shouldHide = true;
-        }
-      }
+  for (const row of rows) {
+    const [title, description, dateCell, completed] = row.children;
 
+    let isCompleted = false;
+    if (completed && completed.children[0]) {
+      isCompleted = completed.children[0].checked;
+    }
 
-      if (shouldHide) {
-        row.classList.add('d-none');
-      } else {
-        row.classList.remove('d-none');
+    let shouldHide = false;  // ✅ AHORA SÍ ESTÁ DEFINIDO
+
+    // Filtrado por palabras clave
+    if (words && title && description) {
+      const matchesWords = (title?.textContent.includes(words) ?? false) || (description?.textContent.includes(words) ?? false);
+      shouldHide = !matchesWords;
+    }
+
+    // Filtrado por estado de completado
+    if (type !== 'all') {
+      const shouldBeCompleted = type === 'completed';
+      if (shouldBeCompleted !== isCompleted) {
+        shouldHide = true;
       }
     }
+
+    // Filtrado por fecha
+    if (dueDate) {
+      const rowDate = dateCell ? new Date(dateCell.innerText) : new Date('Invalid');
+      const filterDate = new Date(dueDate);
+
+      if (isNaN(rowDate.getTime()) || rowDate.getTime() !== filterDate.getTime()) {
+        shouldHide = true;
+      }
+    }
+
+    if (shouldHide) {
+      row.classList.add('d-none');
+    } else {
+      row.classList.remove('d-none');
+    }
   }
+}
+
  
   addTodo(title, description, dueDate) {
     const todo = this.model.addTodo(title, description, dueDate);
